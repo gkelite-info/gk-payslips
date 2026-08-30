@@ -9,9 +9,10 @@ export const signupUser = async (payload: {
   email: string;
   mobile: string;
   alternateMobile: string;
+  role: string;
 }) => {
   try {
-    const { userId, firstName, lastName, email, mobile, alternateMobile } = payload;
+    const { userId, firstName, lastName, email, mobile, alternateMobile, role } = payload;
     const now = new Date().toISOString();
 
     const { data, error } = await supabase
@@ -24,6 +25,7 @@ export const signupUser = async (payload: {
           email,
           mobile,
           alternateMobile,
+          role,
           isActive: true,
           is_deleted: false,
           createdAt: now,

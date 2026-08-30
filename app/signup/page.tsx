@@ -64,6 +64,7 @@ export default function SignupPage() {
         email,
         mobile,
         alternateMobile,
+        role: "fullstack",
       });
 
       if (result.success) {
