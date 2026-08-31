@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Plus, Search, Filter, Loader2, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Filter, Loader2, Pencil, Trash2, User } from "lucide-react";
 import { useGetEmployees } from "@/lib/hooks/employees/useGetEmployees";
 import { EmployeeUI } from "@/lib/helpers/getEmployees";
 import { deleteEmployee } from "@/lib/helpers/deleteEmployee";
@@ -144,10 +145,10 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-100">
-                <th className="px-6 py-4">Employee</th>
-                <th className="px-6 py-4">Employee ID</th>
-                <th className="px-6 py-4">Employment Type</th>
-                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-left font-semibold">Employee</th>
+                <th className="px-6 py-4 text-left font-semibold">Employee ID</th>
+                <th className="px-6 py-4 text-left font-semibold">Employment Type</th>
+                <th className="px-6 py-4 text-left font-semibold">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -166,28 +167,28 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
                 </tr>
               ) : employees.map((emp, idx) => (
                 <tr key={`${emp.id}-${idx}`} className="hover:bg-slate-50/80 transition-colors group">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-100">
                         {emp.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-slate-900">{emp.name}</p>
-                        <p className="text-xs text-slate-500 font-medium">{emp.role}</p>
+                        <p className="text-xs text-slate-500 font-medium capitalize">{emp.role}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
                     <span className="text-sm text-slate-600 font-medium">
                       {emp.employeeSerialNo || "-"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
                     <span className="text-sm text-slate-600 font-medium">
                       {emp.empType ? emp.empType.charAt(0).toUpperCase() + emp.empType.slice(1) : '-'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${emp.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       emp.status === 'On Leave' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                         emp.status === 'Alumni' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
@@ -196,8 +197,13 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
                       {emp.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium align-middle">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href={`/dashboard/employees/${emp.id}`}>
+                        <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer" title="View Profile">
+                          <User size={18} />
+                        </button>
+                      </Link>
                       <button
                         onClick={() => handleEditClick(emp)}
                         className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
