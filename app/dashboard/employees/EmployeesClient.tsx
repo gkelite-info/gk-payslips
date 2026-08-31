@@ -1,29 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Plus, Search, Filter, Loader2, Pencil, Trash2 } from "lucide-react";
 import { useGetEmployees } from "@/lib/hooks/employees/useGetEmployees";
 import { EmployeeUI } from "@/lib/helpers/getEmployees";
+import { deleteEmployee } from "@/lib/helpers/deleteEmployee";
 import AddEmployeeModal from "./AddEmployeeModal";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function EmployeesClient({ initialData }: { initialData: { data: EmployeeUI[], nextCursor: number | undefined } }) {
+export default function EmployeesClient({ initialData, search = "" }: { initialData: { data: EmployeeUI[], nextCursor: number | undefined }, search?: string }) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeUI | null>(null);
   const [employeeToDelete, setEmployeeToDelete] = useState<EmployeeUI | null>(null);
 
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [searchTerm, setSearchTerm] = useState(search);
+
+  useEffect(() => {
+    setSearchTerm(search);
+  }, [search]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== search) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchTerm) {
+          params.set("search", searchTerm);
+        } else {
+          params.delete("search");
+        }
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, search, pathname, router, searchParams]);
+
   const {
     data,
     isLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage
-  } = useGetEmployees(initialData);
+  } = useGetEmployees(initialData, search);
 
   const employees = data?.pages.flatMap(page => page.data) || [];
   const totalLoaded = employees.length;
@@ -41,31 +69,14 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
   const handleDeleteEmployee = async () => {
     if (!employeeToDelete) return;
 
-    // 1. Soft delete the user by setting isActive to false
-    const { error: userError } = await supabase
-      .from('users')
-      .update({ isActive: false, updatedAt: new Date().toISOString() })
-      .eq('userId', employeeToDelete.userId);
-
-    if (userError) {
-      toast.error("Failed to remove user account: " + userError.message);
-      throw userError;
+    try {
+      await deleteEmployee(supabase, employeeToDelete.userId, employeeToDelete.id);
+      toast.success("Employee successfully removed.");
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      setEmployeeToDelete(null);
+    } catch (error: any) {
+      toast.error(error.message);
     }
-
-    // 2. Update employee status to alumni
-    const { error: empError } = await supabase
-      .from('employees')
-      .update({ status: 'alumni', updatedAt: new Date().toISOString() })
-      .eq('employeeId', employeeToDelete.id);
-
-    if (empError) {
-      toast.error("Failed to update employee status: " + empError.message);
-      throw empError;
-    }
-
-    toast.success("Employee successfully removed.");
-    queryClient.invalidateQueries({ queryKey: ["employees"] });
-    setEmployeeToDelete(null);
   };
 
   return (
@@ -74,7 +85,7 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
         isOpen={isAddModalOpen}
         onClose={() => {
           setIsAddModalOpen(false);
-          setTimeout(() => setSelectedEmployee(null), 300); // clear after animation
+          setTimeout(() => setSelectedEmployee(null), 300);
         }}
         editData={selectedEmployee}
       />
@@ -112,13 +123,14 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
         transition={{ duration: 0.4 }}
         className="bg-white rounded-[1.5rem] border border-slate-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden"
       >
-        {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-4 justify-between items-center bg-white">
           <div className="flex items-center gap-2 w-full sm:w-auto px-3 py-2 bg-slate-50 border border-slate-100 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 transition-all">
             <Search size={16} className="text-slate-400" />
             <input
               type="text"
               placeholder="Search employees..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-transparent border-none outline-none text-sm w-full sm:w-64 text-slate-900 placeholder-slate-400 font-medium"
             />
           </div>
@@ -128,14 +140,13 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
           </button>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-100">
                 <th className="px-6 py-4">Employee</th>
                 <th className="px-6 py-4">Employee ID</th>
-                <th className="px-6 py-4">Department</th>
+                <th className="px-6 py-4">Employment Type</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
@@ -168,11 +179,13 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-slate-600 font-medium">
-                      EMP-{emp.id.split('-')[0].toUpperCase()}
+                      {emp.employeeSerialNo || "-"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-slate-600 font-medium">{emp.department}</span>
+                    <span className="text-sm text-slate-600 font-medium">
+                      {emp.empType ? emp.empType.charAt(0).toUpperCase() + emp.empType.slice(1) : '-'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${emp.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
@@ -207,7 +220,6 @@ export default function EmployeesClient({ initialData }: { initialData: { data: 
           </table>
         </div>
 
-        {/* Load More Pagination */}
         <div className="p-4 border-t border-slate-100 flex flex-col items-center justify-center text-sm font-medium text-slate-500 bg-slate-50">
           <p className="mb-4">Showing {totalLoaded} entries</p>
           {hasNextPage && (

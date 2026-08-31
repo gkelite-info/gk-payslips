@@ -2,9 +2,10 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 export interface EmployeeUI {
   id: string;
+  employeeSerialNo: string;
   name: string;
   role: string;
-  department: string;
+  empType: string;
   status: string;
   probationEndDate?: string;
   emergencyContactName?: string;
@@ -21,6 +22,7 @@ export interface EmployeeUI {
 
 export type SupabaseEmployee = {
   employeeId: string;
+  employeeSerialNo: string;
   userId: string;
   status: string;
   employmentType: string;
@@ -48,15 +50,16 @@ export type SupabaseEmployee = {
   }[] | null;
 };
 
-export async function getEmployees(supabase: SupabaseClient, pageParam: number = 0): Promise<{ data: EmployeeUI[], nextCursor: number | undefined }> {
+export async function getEmployees(supabase: SupabaseClient, pageParam: number = 0, searchQuery: string = ""): Promise<{ data: EmployeeUI[], nextCursor: number | undefined }> {
   const limit = 10;
   const from = pageParam * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('employees')
     .select(`
       employeeId,
+      employeeSerialNo,
       userId,
       status,
       employmentType,
@@ -65,7 +68,7 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
       probationEndDate,
       emergencyContactName,
       emergencyContactPhone,
-      users (
+      users!inner (
         userId,
         firstName,
         lastName,
@@ -77,6 +80,32 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
     `)
     .range(from, to)
     .order('createdAt', { ascending: false });
+
+  if (searchQuery) {
+    const { data: matchedUsers } = await supabase
+      .from('users')
+      .select('userId')
+      .or(`firstName.ilike.%${searchQuery}%,lastName.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
+      .limit(1000);
+
+    const userIds = matchedUsers?.map(u => u.userId) || [];
+
+    let orString = `employeeSerialNo.ilike.%${searchQuery}%`;
+
+    const searchLower = searchQuery.toLowerCase();
+    const validEmploymentTypes = ['full-time', 'part-time', 'contract', 'intern'];
+    if (validEmploymentTypes.includes(searchLower)) {
+      orString += `,employmentType.eq.${searchLower}`;
+    }
+
+    if (userIds.length > 0) {
+      orString += `,userId.in.(${userIds.join(',')})`;
+    }
+
+    query = query.or(orString);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(error.message);
@@ -91,6 +120,7 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
     const user = Array.isArray(typedEmp.users) ? typedEmp.users[0] : typedEmp.users;
     return {
       id: typedEmp.employeeId,
+      employeeSerialNo: typedEmp.employeeSerialNo,
       userId: typedEmp.userId,
       name: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
       firstName: user?.firstName || "",
@@ -99,13 +129,13 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
       mobile: user?.mobile || "",
       alternateMobile: user?.alternateMobile,
       role: user?.role || "Employee",
-      department: typedEmp.employmentType,
+      empType: typedEmp.employmentType,
       shift: typedEmp.shift || "general",
       joinedAt: typedEmp.joinedAt,
-      status: typedEmp.status === "active" ? "Active" : 
-              typedEmp.status === "on-leave" ? "On Leave" : 
-              typedEmp.status === "alumni" ? "Alumni" :
-              typedEmp.status === "terminated" ? "Inactive" : "Probation",
+      status: typedEmp.status === "active" ? "Active" :
+        typedEmp.status === "on-leave" ? "On Leave" :
+          typedEmp.status === "alumni" ? "Alumni" :
+            typedEmp.status === "terminated" ? "Inactive" : "Probation",
       probationEndDate: typedEmp.probationEndDate,
       emergencyContactName: typedEmp.emergencyContactName,
       emergencyContactPhone: typedEmp.emergencyContactPhone,

@@ -7,9 +7,15 @@ export const metadata = {
   description: "Manage your workforce, roles, and statuses.",
 };
 
-export default async function EmployeesPage() {
+export default async function EmployeesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
   const supabase = await createClient();
-  const initialData = await getEmployees(supabase, 0);
+  const resolvedSearchParams = await searchParams;
+  const search = resolvedSearchParams?.search || "";
+  const initialData = await getEmployees(supabase, 0, search);
 
-  return <EmployeesClient initialData={initialData} />;
+  return <EmployeesClient initialData={initialData} search={search} />;
 }

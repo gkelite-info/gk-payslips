@@ -43,7 +43,6 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-[length:400%_400%] animate-gradient p-4 sm:p-8">
       <div className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/20 p-8 shadow-2xl backdrop-blur-xl border border-white/30 dark:bg-black/20 dark:border-white/10 transition-all duration-300 hover:shadow-indigo-500/25">
-        {/* Decorative Blob */}
         <div className="absolute -top-16 -left-16 h-32 w-32 rounded-full bg-purple-400/30 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 h-32 w-32 rounded-full bg-indigo-400/30 blur-3xl pointer-events-none" />
 
