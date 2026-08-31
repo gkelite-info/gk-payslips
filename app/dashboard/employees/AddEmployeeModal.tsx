@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { signupUser } from "@/lib/helpers/signupUser";
+import { updateUser } from "@/lib/helpers/updateUser";
+import { updateEmployee } from "@/lib/helpers/updateEmployee";
+import { insertEmployee } from "@/lib/helpers/insertEmployee";
 import { EmployeeUI } from "@/lib/helpers/getEmployees";
 
 interface AddEmployeeModalProps {
@@ -22,6 +25,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
   const isEditing = !!editData;
 
   const defaultFormData = {
+    employeeSerialNo: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -43,6 +47,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
     if (isOpen) {
       if (editData) {
         setFormData({
+          employeeSerialNo: editData.employeeSerialNo || "",
           firstName: editData.firstName || "",
           lastName: editData.lastName || "",
           email: editData.email || "",
@@ -50,7 +55,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
           alternateMobile: editData.alternateMobile || "",
           joinedAt: editData.joinedAt ? new Date(editData.joinedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           shift: editData.shift || "general",
-          employmentType: editData.department || "full-time",
+          employmentType: editData.empType || "full-time",
           status: editData.status.toLowerCase() === 'on leave' ? 'on-leave' :
             editData.status.toLowerCase() === 'inactive' ? 'terminated' :
               editData.status.toLowerCase() === 'alumni' ? 'alumni' :
@@ -73,41 +78,41 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
 
     if (isEditing) {
 
-      const { error: userError } = await supabase.from('users').update({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        mobile: formData.mobile,
-        alternateMobile: formData.alternateMobile,
-        role: formData.role,
-        updatedAt: now,
-      }).eq('userId', editData.userId);
-
-      if (userError) {
+      try {
+        await updateUser(supabase, editData.userId, {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          mobile: formData.mobile,
+          alternateMobile: formData.alternateMobile,
+          role: formData.role,
+          updatedAt: now,
+        });
+      } catch (userError: any) {
         console.error("[AddEmployeeModal] User update error:", userError.message);
         toast.error("Failed to update user details: " + userError.message);
         setIsSubmitting(false);
         return;
       }
 
-      const { error: empError } = await supabase.from('employees').update({
-        joinedAt: formData.joinedAt,
-        shift: formData.shift,
-        employmentType: formData.employmentType,
-        status: formData.status,
-        probationEndDate: formData.probationEndDate || null,
-        emergencyContactName: formData.emergencyContactName || null,
-        emergencyContactPhone: formData.emergencyContactPhone || null,
-        updatedAt: now,
-      }).eq('employeeId', editData.id);
-
-      if (empError) {
-        console.error("[AddEmployeeModal] Employee update error:", empError.message);
-        toast.error("Failed to update employee details: " + empError.message);
-      } else {
+      try {
+        await updateEmployee(supabase, editData.id, {
+          employeeSerialNo: formData.employeeSerialNo,
+          joinedAt: formData.joinedAt,
+          shift: formData.shift,
+          employmentType: formData.employmentType,
+          status: formData.status,
+          probationEndDate: formData.probationEndDate || null,
+          emergencyContactName: formData.emergencyContactName || null,
+          emergencyContactPhone: formData.emergencyContactPhone || null,
+          updatedAt: now,
+        });
         toast.success("Employee updated successfully");
         queryClient.invalidateQueries({ queryKey: ["employees"] });
         onClose();
+      } catch (empError: any) {
+        console.error("[AddEmployeeModal] Employee update error:", empError.message);
+        toast.error("Failed to update employee details: " + empError.message);
       }
 
       setIsSubmitting(false);
@@ -133,30 +138,31 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
       return;
     }
 
-    const { error } = await supabase.from('employees').insert({
-      employeeId: newEmployeeId,
-      userId: newUserId,
-      joinedAt: formData.joinedAt,
-      shift: formData.shift,
-      employmentType: formData.employmentType,
-      status: formData.status,
-      probationEndDate: formData.probationEndDate || null,
-      emergencyContactName: formData.emergencyContactName || null,
-      emergencyContactPhone: formData.emergencyContactPhone || null,
-      createdAt: now,
-      updatedAt: now,
-    });
+    try {
+      await insertEmployee(supabase, {
+        employeeId: newEmployeeId,
+        employeeSerialNo: formData.employeeSerialNo,
+        userId: newUserId,
+        joinedAt: formData.joinedAt,
+        shift: formData.shift,
+        employmentType: formData.employmentType,
+        status: formData.status,
+        probationEndDate: formData.probationEndDate || null,
+        emergencyContactName: formData.emergencyContactName || null,
+        emergencyContactPhone: formData.emergencyContactPhone || null,
+        createdAt: now,
+        updatedAt: now,
+      });
 
-    setIsSubmitting(false);
-
-    if (error) {
-      toast.error("Failed to add employee: " + error.message);
-    } else {
       toast.success("Employee added successfully");
       setFormData(defaultFormData);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       onClose();
+    } catch (error: any) {
+      toast.error("Failed to add employee: " + error.message);
     }
+
+    setIsSubmitting(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -243,6 +249,12 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
 
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Employment Details</h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Employee Id <span className="text-red-500">*</span></label>
+                      <input type="text" name="employeeSerialNo" value={formData.employeeSerialNo} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700" placeholder="EMP-001" />
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-1.5">Joined Date <span className="text-red-500">*</span></label>
