@@ -6,7 +6,10 @@ export const deleteEmployeePayslip = async (
 ) => {
   const { error } = await supabase
     .from('employee_payslips')
-    .delete()
+    .update({ 
+      is_deleted: true, 
+      deletedAt: new Date().toISOString() 
+    })
     .eq('employeePayslipId', employeePayslipId);
 
   if (error) {

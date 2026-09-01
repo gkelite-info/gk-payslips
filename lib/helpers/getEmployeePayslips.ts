@@ -32,6 +32,7 @@ export async function getEmployeePayslips(
     .from('employee_payslips')
     .select('*')
     .eq('employeeId', employeeId)
+    .is('deletedAt', null)
     .order('year', { ascending: false })
     .order('month', { ascending: false })
     .range(from, to);

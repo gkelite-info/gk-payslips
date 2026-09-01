@@ -12,6 +12,7 @@ import { deleteEmployeePayslip } from "@/lib/helpers/deleteEmployeePayslip";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit2, Trash2 } from "lucide-react";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 
 export default function EmployeePayslipsClient({ 
   employeeId, 
@@ -21,6 +22,8 @@ export default function EmployeePayslipsClient({
   initialData: { data: EmployeePayslipUI[], nextCursor: number | undefined };
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [slipToDelete, setSlipToDelete] = useState<string | null>(null);
   const [editData, setEditData] = useState<EmployeePayslipUI | null>(null);
   const queryClient = useQueryClient();
 
@@ -39,15 +42,23 @@ export default function EmployeePayslipsClient({
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (slipId: string) => {
-    if (!window.confirm("Are you sure you want to delete this payslip? This action cannot be undone.")) return;
+  const handleDelete = (slipId: string) => {
+    setSlipToDelete(slipId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!slipToDelete) return;
     
     try {
-      await deleteEmployeePayslip(supabase, slipId);
+      await deleteEmployeePayslip(supabase, slipToDelete);
       toast.success("Payslip deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["employeePayslips", employeeId] });
     } catch (error: any) {
       toast.error("Failed to delete payslip: " + error.message);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setSlipToDelete(null);
     }
   };
 
@@ -197,6 +208,18 @@ export default function EmployeePayslipsClient({
         }} 
         employeeId={employeeId}
         editData={editData} 
+      />
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSlipToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Payslip"
+        description="Are you sure you want to delete this payslip? It will be removed from the list."
+        confirmText="Delete"
       />
     </div>
   );

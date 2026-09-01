@@ -51,6 +51,10 @@ export default async function EmployeeOverviewPage({
             <p className="text-slate-900 font-semibold capitalize">{employee.role}</p>
           </div>
           <div>
+            <p className="text-sm font-medium text-slate-500 mb-1">Designation</p>
+            <p className="text-slate-900 font-semibold">{employee.designation || "-"}</p>
+          </div>
+          <div>
             <p className="text-sm font-medium text-slate-500 mb-1">Employment Type</p>
             <p className="text-slate-900 font-semibold capitalize">{employee.empType}</p>
           </div>
