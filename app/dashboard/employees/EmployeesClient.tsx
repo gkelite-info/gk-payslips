@@ -25,6 +25,7 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
   const searchParams = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState(search);
+  const [sortOrder, setSortOrder] = useState('latest');
 
   useEffect(() => {
     setSearchTerm(search);
@@ -55,7 +56,14 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
   } = useGetEmployees(initialData, search);
 
   const employees = data?.pages.flatMap(page => page.data) || [];
-  const totalLoaded = employees.length;
+  
+  const sortedEmployees = [...employees].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return sortOrder === 'latest' ? dateB - dateA : dateA - dateB;
+  });
+  
+  const totalLoaded = sortedEmployees.length;
 
   const handleEditClick = (emp: EmployeeUI) => {
     setSelectedEmployee(emp);
@@ -135,10 +143,24 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
               className="bg-transparent border-none outline-none text-sm w-full sm:w-64 text-slate-900 placeholder-slate-400 font-medium"
             />
           </div>
-          <button className="h-9 px-4 bg-white border border-slate-200 hover:bg-slate-50 transition-colors rounded-xl text-sm font-semibold text-slate-700 flex items-center gap-2 w-full sm:w-auto justify-center cursor-pointer">
-            <Filter size={16} />
-            Filter
-          </button>
+          <div className="relative w-full sm:w-auto">
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="h-9 pl-9 pr-8 bg-white border border-slate-200 hover:bg-slate-50 transition-colors rounded-xl text-sm font-semibold text-slate-700 appearance-none outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 cursor-pointer w-full sm:w-auto"
+            >
+              <option value="latest">Latest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Filter size={16} className="text-slate-500" />
+            </div>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -153,19 +175,19 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {isLoading && employees.length === 0 ? (
+              {isLoading && sortedEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-slate-500 font-medium">
                     Loading employees...
                   </td>
                 </tr>
-              ) : employees.length === 0 ? (
+              ) : sortedEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-slate-400 font-medium">
                     No employees found.
                   </td>
                 </tr>
-              ) : employees.map((emp, idx) => (
+              ) : sortedEmployees.map((emp, idx) => (
                 <tr key={`${emp.id}-${idx}`} className="hover:bg-slate-50/80 transition-colors group">
                   <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
                     <div className="flex items-center gap-3">
@@ -237,7 +259,7 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
               {isFetchingNextPage ? <><Loader2 size={16} className="animate-spin" /> Loading more...</> : 'Load More'}
             </button>
           )}
-          {!hasNextPage && employees.length > 0 && (
+          {!hasNextPage && sortedEmployees.length > 0 && (
             <p className="text-slate-400">You&apos;ve reached the end of the list</p>
           )}
         </div>

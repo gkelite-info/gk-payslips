@@ -8,14 +8,19 @@ export const updateUser = async (
     lastName: string;
     email: string;
     mobile: string;
-    alternateMobile?: string;
+    alternateMobile?: string | null;
     role: string;
     updatedAt: string;
   }
 ) => {
+  const updatePayload = {
+    ...data,
+    alternateMobile: data.alternateMobile || null
+  };
+
   const { error } = await supabase
     .from('users')
-    .update(data)
+    .update(updatePayload)
     .eq('userId', userId);
 
   if (error) {

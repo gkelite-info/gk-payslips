@@ -15,6 +15,7 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
       probationEndDate,
       emergencyContactName,
       emergencyContactPhone,
+      createdAt,
       users!inner (
         userId,
         firstName,
@@ -29,7 +30,7 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
     .single();
 
   if (error) {
-    if (error.code === 'PGRST116') return null; // Not found
+    if (error.code === 'PGRST116') return null;
     throw new Error(error.message);
   }
 
@@ -37,7 +38,7 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
 
   const typedEmp = data as unknown as SupabaseEmployee;
   const user = Array.isArray(typedEmp.users) ? typedEmp.users[0] : typedEmp.users;
-  
+
   return {
     id: typedEmp.employeeId,
     employeeSerialNo: typedEmp.employeeSerialNo,
@@ -59,5 +60,6 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
     probationEndDate: typedEmp.probationEndDate,
     emergencyContactName: typedEmp.emergencyContactName,
     emergencyContactPhone: typedEmp.emergencyContactPhone,
+    createdAt: typedEmp.createdAt,
   };
 }
