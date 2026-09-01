@@ -42,7 +42,11 @@ export const upsertEmployeePayslip = async (
 
     const { error } = await supabase
       .from('employee_payslips')
-      .update(updateData)
+      .update({
+        ...updateData,
+        is_deleted: false,
+        deletedAt: null
+      })
       .eq('employeePayslipId', existing.employeePayslipId);
     
     if (error) throw new Error(error.message);

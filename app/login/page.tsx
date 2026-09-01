@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -12,8 +12,28 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cookies = document.cookie.split(';');
+    const emailCookie = cookies.find(c => c.trim().startsWith('remembered_email='));
+    const passwordCookie = cookies.find(c => c.trim().startsWith('remembered_password='));
+    
+    if (emailCookie) {
+      setEmail(decodeURIComponent(emailCookie.split('=')[1]));
+      setRememberMe(true);
+    }
+    
+    if (passwordCookie) {
+      try {
+        setPassword(atob(decodeURIComponent(passwordCookie.split('=')[1])));
+      } catch (e) {
+        // Ignore decode error
+      }
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,6 +49,14 @@ export default function LoginPage() {
       if (authError) throw authError;
 
       if (data.user) {
+        if (rememberMe) {
+          document.cookie = `remembered_email=${encodeURIComponent(email)}; max-age=${30 * 24 * 60 * 60}; path=/; SameSite=Strict`;
+          document.cookie = `remembered_password=${encodeURIComponent(btoa(password))}; max-age=${30 * 24 * 60 * 60}; path=/; SameSite=Strict`;
+        } else {
+          document.cookie = `remembered_email=; max-age=0; path=/; SameSite=Strict`;
+          document.cookie = `remembered_password=; max-age=0; path=/; SameSite=Strict`;
+        }
+
         toast.success("Successfully logged in!");
         router.push("/dashboard");
       }
@@ -41,7 +69,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-[length:400%_400%] animate-gradient p-4 sm:p-8">
+    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-[length:400%_400%] animate-gradient p-4 sm:p-8">
       <div className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/20 p-8 shadow-2xl backdrop-blur-xl border border-white/30 dark:bg-black/20 dark:border-white/10 transition-all duration-300 hover:shadow-indigo-500/25">
         <div className="absolute -top-16 -left-16 h-32 w-32 rounded-full bg-purple-400/30 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 h-32 w-32 rounded-full bg-indigo-400/30 blur-3xl pointer-events-none" />
@@ -126,6 +154,8 @@ export default function LoginPage() {
               <label className="flex items-center space-x-2 cursor-pointer group">
                 <input
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="rounded border-white/30 bg-white/10 text-indigo-500 focus:ring-indigo-500/50 transition-colors"
                 />
                 <span className="text-white/80 font-medium group-hover:text-white transition-colors">
@@ -149,7 +179,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-sm text-white/70 font-medium">
+          {/* <p className="mt-8 text-sm text-white/70 font-medium">
             Don't have an account?{" "}
             <Link
               href="/signup"
@@ -157,7 +187,7 @@ export default function LoginPage() {
             >
               Sign Up
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

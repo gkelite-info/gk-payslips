@@ -56,13 +56,13 @@ export default function EmployeesClient({ initialData, search = "" }: { initialD
   } = useGetEmployees(initialData, search);
 
   const employees = data?.pages.flatMap(page => page.data) || [];
-  
+
   const sortedEmployees = [...employees].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime();
     const dateB = new Date(b.createdAt).getTime();
     return sortOrder === 'latest' ? dateB - dateA : dateA - dateB;
   });
-  
+
   const totalLoaded = sortedEmployees.length;
 
   const handleEditClick = (emp: EmployeeUI) => {
