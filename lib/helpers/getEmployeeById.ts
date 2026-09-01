@@ -15,6 +15,7 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
       probationEndDate,
       emergencyContactName,
       emergencyContactPhone,
+      designation,
       createdAt,
       users!inner (
         userId,
@@ -60,6 +61,7 @@ export async function getEmployeeById(supabase: SupabaseClient, employeeId: stri
     probationEndDate: typedEmp.probationEndDate,
     emergencyContactName: typedEmp.emergencyContactName,
     emergencyContactPhone: typedEmp.emergencyContactPhone,
+    designation: typedEmp.designation,
     createdAt: typedEmp.createdAt,
   };
 }

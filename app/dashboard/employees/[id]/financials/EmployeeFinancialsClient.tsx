@@ -26,6 +26,8 @@ export default function EmployeeFinancialsClient({
     bankAccountNumber: "",
     bankIfscCode: "",
     panNumber: "",
+    aadhaarNumber: "",
+    uanNumber: "",
     basicSalary: 0,
     houseRentAllowance: 0,
     transportationAllowance: 0,
@@ -44,6 +46,8 @@ export default function EmployeeFinancialsClient({
         bankAccountNumber: financials.bankAccountNumber,
         bankIfscCode: financials.bankIfscCode,
         panNumber: financials.panNumber,
+        aadhaarNumber: financials.aadhaarNumber || "",
+        uanNumber: financials.uanNumber || "",
         basicSalary: financials.basicSalary,
         houseRentAllowance: financials.houseRentAllowance,
         transportationAllowance: financials.transportationAllowance,
@@ -57,9 +61,19 @@ export default function EmployeeFinancialsClient({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
+    let newValue: string | number = value;
+    
+    if (type === 'number') {
+      newValue = parseFloat(value) || 0;
+    } else if (name === 'bankIfscCode' || name === 'panNumber') {
+      newValue = value.toUpperCase();
+    } else if (name === 'bankName') {
+      newValue = value.replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? parseFloat(value) || 0 : value
+      [name]: newValue
     }));
   };
 
@@ -142,6 +156,16 @@ export default function EmployeeFinancialsClient({
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">PAN Number <span className="text-red-500">*</span></label>
                 <input type="text" name="panNumber" value={formData.panNumber} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 uppercase" placeholder="ABCDE1234F" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Aadhaar Number</label>
+                <input type="text" name="aadhaarNumber" value={formData.aadhaarNumber || ""} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700" placeholder="1234 5678 9012" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">UAN Number</label>
+                <input type="text" name="uanNumber" value={formData.uanNumber || ""} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 uppercase" placeholder="100000000000" />
               </div>
             </div>
           </div>

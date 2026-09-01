@@ -7,6 +7,8 @@ export interface EmployeeFinancialUI {
   bankAccountNumber: string;
   bankIfscCode: string;
   panNumber: string;
+  aadhaarNumber?: string | null;
+  uanNumber?: string | null;
   basicSalary: number;
   houseRentAllowance: number;
   transportationAllowance: number;
@@ -41,6 +43,8 @@ export async function getEmployeeFinancials(
     bankAccountNumber: data.bankAccountNumber,
     bankIfscCode: data.bankIfscCode,
     panNumber: data.panNumber,
+    aadhaarNumber: data.aadhaarNumber,
+    uanNumber: data.uanNumber,
     basicSalary: data.basicSalary,
     houseRentAllowance: data.houseRentAllowance,
     transportationAllowance: data.transportationAllowance,

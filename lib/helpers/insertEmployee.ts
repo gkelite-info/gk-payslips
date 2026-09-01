@@ -13,6 +13,7 @@ export const insertEmployee = async (
     probationEndDate?: string | null;
     emergencyContactName?: string | null;
     emergencyContactPhone?: string | null;
+    designation?: string | null;
     createdAt: string;
     updatedAt: string;
   }

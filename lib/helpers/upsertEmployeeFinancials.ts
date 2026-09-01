@@ -9,6 +9,8 @@ export const upsertEmployeeFinancials = async (
     bankAccountNumber: string;
     bankIfscCode: string;
     panNumber: string;
+    aadhaarNumber?: string | null;
+    uanNumber?: string | null;
     basicSalary: number;
     houseRentAllowance: number;
     transportationAllowance: number;

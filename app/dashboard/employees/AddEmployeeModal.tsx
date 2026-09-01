@@ -39,6 +39,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
     emergencyContactName: "",
     emergencyContactPhone: "",
     role: "fullstack",
+    designation: "",
   };
 
   const [formData, setFormData] = useState(defaultFormData);
@@ -64,6 +65,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
           emergencyContactName: editData.emergencyContactName || "",
           emergencyContactPhone: editData.emergencyContactPhone || "",
           role: editData.role?.toLowerCase() || "fullstack",
+          designation: editData.designation || "",
         });
       } else {
         setFormData(defaultFormData);
@@ -105,6 +107,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
           probationEndDate: formData.probationEndDate || null,
           emergencyContactName: formData.emergencyContactName || null,
           emergencyContactPhone: formData.emergencyContactPhone || null,
+          designation: formData.designation || null,
           updatedAt: now,
         });
         toast.success("Employee updated successfully");
@@ -150,6 +153,7 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
         probationEndDate: formData.probationEndDate || null,
         emergencyContactName: formData.emergencyContactName || null,
         emergencyContactPhone: formData.emergencyContactPhone || null,
+        designation: formData.designation || null,
         createdAt: now,
         updatedAt: now,
       });
@@ -249,10 +253,14 @@ export default function AddEmployeeModal({ isOpen, onClose, editData }: AddEmplo
 
                 <div className="space-y-4">
                   <h3 className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Employment Details</h3>
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-slate-700 mb-1.5">Employee Id <span className="text-red-500">*</span></label>
                       <input type="text" name="employeeSerialNo" value={formData.employeeSerialNo} onChange={handleChange} required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700" placeholder="EMP-001" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">Designation</label>
+                      <input type="text" name="designation" value={formData.designation} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700" placeholder="Software Engineer" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
