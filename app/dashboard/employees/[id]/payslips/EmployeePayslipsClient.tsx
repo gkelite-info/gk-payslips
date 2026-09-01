@@ -6,6 +6,12 @@ import { Plus, FileText, Loader2, Download, ExternalLink, Calendar, CheckCircle2
 import { useGetEmployeePayslips } from "@/lib/hooks/employees/useGetEmployeePayslips";
 import { EmployeePayslipUI } from "@/lib/helpers/getEmployeePayslips";
 import GeneratePayslipModal from "./GeneratePayslipModal";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+import { deleteEmployeePayslip } from "@/lib/helpers/deleteEmployeePayslip";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { Edit2, Trash2 } from "lucide-react";
 
 export default function EmployeePayslipsClient({ 
   employeeId, 
@@ -15,6 +21,9 @@ export default function EmployeePayslipsClient({
   initialData: { data: EmployeePayslipUI[], nextCursor: number | undefined };
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState<EmployeePayslipUI | null>(null);
+  const queryClient = useQueryClient();
+
   const { 
     data, 
     isLoading,
@@ -25,6 +34,23 @@ export default function EmployeePayslipsClient({
 
   const payslips = data?.pages.flatMap(page => page.data) || [];
 
+  const handleEdit = (slip: EmployeePayslipUI) => {
+    setEditData(slip);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (slipId: string) => {
+    if (!window.confirm("Are you sure you want to delete this payslip? This action cannot be undone.")) return;
+    
+    try {
+      await deleteEmployeePayslip(supabase, slipId);
+      toast.success("Payslip deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["employeePayslips", employeeId] });
+    } catch (error: any) {
+      toast.error("Failed to delete payslip: " + error.message);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
@@ -33,7 +59,10 @@ export default function EmployeePayslipsClient({
           <p className="text-sm text-slate-500 font-medium mt-1">Generate and manage monthly salary slips.</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditData(null);
+            setIsModalOpen(true);
+          }}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 cursor-pointer"
         >
           <Plus size={16} />
@@ -112,11 +141,28 @@ export default function EmployeePayslipsClient({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap align-middle text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="View Payslip">
+                      <Link 
+                        href={`/payslip/${slip.id}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer" 
+                        title="View Payslip"
+                      >
                         <ExternalLink size={18} />
+                      </Link>
+                      <button 
+                        onClick={() => handleEdit(slip)}
+                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" 
+                        title="Edit Payslip"
+                      >
+                        <Edit2 size={18} />
                       </button>
-                      <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download PDF">
-                        <Download size={18} />
+                      <button 
+                        onClick={() => handleDelete(slip.id)}
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
+                        title="Delete Payslip"
+                      >
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </td>
@@ -145,8 +191,12 @@ export default function EmployeePayslipsClient({
 
       <GeneratePayslipModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        employeeId={employeeId} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditData(null);
+        }} 
+        employeeId={employeeId}
+        editData={editData} 
       />
     </div>
   );

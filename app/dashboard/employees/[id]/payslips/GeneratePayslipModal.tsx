@@ -9,15 +9,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 import { upsertEmployeePayslip } from "@/lib/helpers/upsertEmployeePayslip";
 import { useGetEmployeeFinancials } from "@/lib/hooks/employees/useGetEmployeeFinancials";
+import { EmployeePayslipUI } from "@/lib/helpers/getEmployeePayslips";
 
 export default function GeneratePayslipModal({
   isOpen,
   onClose,
-  employeeId
+  employeeId,
+  editData
 }: {
   isOpen: boolean;
   onClose: () => void;
   employeeId: string;
+  editData?: EmployeePayslipUI | null;
 }) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +52,20 @@ export default function GeneratePayslipModal({
 
   // Auto-populate when financials are loaded and modal opens
   useEffect(() => {
-    if (financials && isOpen) {
+    if (editData && isOpen) {
+      setFormData({
+        month: editData.month,
+        year: editData.year,
+        basicSalary: editData.basicSalary,
+        houseRentAllowance: editData.houseRentAllowance,
+        transportationAllowance: editData.transportationAllowance,
+        telephoneAllowance: editData.telephoneAllowance,
+        statutoryBonus: editData.statutoryBonus,
+        specialAllowance: editData.specialAllowance,
+        companyDeduction: editData.companyDeduction,
+        lossOfPay: editData.lossOfPay || 0,
+      });
+    } else if (financials && isOpen) {
       setFormData(prev => ({
         ...prev,
         basicSalary: financials.basicSalary,
@@ -64,7 +80,7 @@ export default function GeneratePayslipModal({
       // Reset to 0 if no financials found
       setFormData(defaultFormData);
     }
-  }, [financials, isOpen]);
+  }, [financials, isOpen, editData]);
 
   const totalSalaryBeforeDeduction =
     (formData.basicSalary || 0) +
@@ -91,13 +107,13 @@ export default function GeneratePayslipModal({
     try {
       const now = new Date().toISOString();
       await upsertEmployeePayslip(supabase, {
-        employeePayslipId: uuidv4(), // Helper will handle upsert matching by month/year
+        employeePayslipId: editData?.id || uuidv4(), // Helper will handle upsert matching by month/year
         employeeId,
         ...formData,
         totalSalaryBeforeDeduction,
         totalSalaryAfterDeduction,
-        status: "draft",
-        createdAt: now,
+        status: editData ? editData.status : "draft",
+        createdAt: editData ? editData.createdAt : now,
         updatedAt: now,
       });
 
@@ -134,8 +150,8 @@ export default function GeneratePayslipModal({
                   <FileText size={20} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">Generate Payslip</h2>
-                  <p className="text-sm text-slate-500 font-medium mt-0.5">Select month/year and adjust allowances if needed.</p>
+                  <h2 className="text-xl font-bold text-slate-900">{editData ? "Edit Payslip" : "Generate Payslip"}</h2>
+                  <p className="text-sm text-slate-500 font-medium mt-0.5">{editData ? "Update the payslip allowances and deductions." : "Select month/year and adjust allowances if needed."}</p>
                 </div>
               </div>
               <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
@@ -144,7 +160,7 @@ export default function GeneratePayslipModal({
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 overflow-y-auto custom-scrollbar flex-1">
-              {!financials && !isLoadingFinancials && (
+              {!financials && !isLoadingFinancials && !editData && (
                 <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
                   <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
                   <div>
@@ -158,13 +174,13 @@ export default function GeneratePayslipModal({
                 <div className="grid grid-cols-2 gap-5 p-5 bg-slate-50 rounded-xl border border-slate-100">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">Payslip Month <span className="text-red-500">*</span></label>
-                    <select name="month" value={formData.month} onChange={handleChange} required className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700">
+                    <select name="month" value={formData.month} onChange={handleChange} disabled={!!editData} required className={`w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 ${editData ? 'opacity-70 cursor-not-allowed bg-slate-100' : ''}`}>
                       {months.map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">Payslip Year <span className="text-red-500">*</span></label>
-                    <select name="year" value={formData.year} onChange={handleChange} required className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700">
+                    <select name="year" value={formData.year} onChange={handleChange} disabled={!!editData} required className={`w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 ${editData ? 'opacity-70 cursor-not-allowed bg-slate-100' : ''}`}>
                       {years.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
@@ -239,7 +255,7 @@ export default function GeneratePayslipModal({
                   Cancel
                 </button>
                 <button type="submit" disabled={isSubmitting || isLoadingFinancials} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2">
-                  {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : 'Generate Payslip'}
+                  {isSubmitting ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : editData ? 'Save Changes' : 'Generate Payslip'}
                 </button>
               </div>
             </form>
