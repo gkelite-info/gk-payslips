@@ -18,6 +18,7 @@ export interface EmployeeUI {
   email: string;
   mobile: string;
   alternateMobile?: string;
+  createdAt: string;
 }
 
 export type SupabaseEmployee = {
@@ -31,6 +32,7 @@ export type SupabaseEmployee = {
   probationEndDate?: string;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  createdAt: string;
   users: {
     userId: string;
     firstName: string;
@@ -68,6 +70,7 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
       probationEndDate,
       emergencyContactName,
       emergencyContactPhone,
+      createdAt,
       users!inner (
         userId,
         firstName,
@@ -139,6 +142,7 @@ export async function getEmployees(supabase: SupabaseClient, pageParam: number =
       probationEndDate: typedEmp.probationEndDate,
       emergencyContactName: typedEmp.emergencyContactName,
       emergencyContactPhone: typedEmp.emergencyContactPhone,
+      createdAt: typedEmp.createdAt,
     };
   });
 

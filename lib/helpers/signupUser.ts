@@ -8,7 +8,7 @@ export const signupUser = async (payload: {
   lastName: string;
   email: string;
   mobile: string;
-  alternateMobile: string;
+  alternateMobile: string | null;
   role: string;
 }) => {
   try {
@@ -24,7 +24,7 @@ export const signupUser = async (payload: {
           lastName,
           email,
           mobile,
-          alternateMobile,
+          alternateMobile: alternateMobile || null,
           role,
           isActive: true,
           is_deleted: false,
