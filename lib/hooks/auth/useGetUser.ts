@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getUser } from "@/lib/helpers/getUser";
+import { getUser } from "@/lib/helpers/users";
 
 export function useGetUser() {
   return useQuery({

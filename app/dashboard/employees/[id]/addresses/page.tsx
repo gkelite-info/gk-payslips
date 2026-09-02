@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { getEmployeeAddresses } from "@/lib/helpers/getEmployeeAddresses";
+import { getEmployeeAddresses } from "@/lib/helpers/employeeAddresses";
 import EmployeeAddressesClient from "./EmployeeAddressesClient";
 
 export default async function EmployeeAddressesPage({

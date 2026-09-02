@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, CreditCard, Loader2, ArrowRightLeft } from "lucide-react";
 import { useGetEmployeeSalaryPayments } from "@/lib/hooks/employees/useGetEmployeeSalaryPayments";
-import { EmployeeSalaryPaymentUI } from "@/lib/helpers/getEmployeeSalaryPayments";
+import { EmployeeSalaryPaymentUI } from "@/lib/helpers/employeeSalaryPayments";
 import AddSalaryPaymentModal from "./AddSalaryPaymentModal";
 
 export default function EmployeeSalaryPaymentsClient({ 

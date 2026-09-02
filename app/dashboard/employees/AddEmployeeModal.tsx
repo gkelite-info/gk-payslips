@@ -7,11 +7,11 @@ import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
-import { signupUser } from "@/lib/helpers/signupUser";
-import { updateUser } from "@/lib/helpers/updateUser";
-import { updateEmployee } from "@/lib/helpers/updateEmployee";
-import { insertEmployee } from "@/lib/helpers/insertEmployee";
-import { EmployeeUI } from "@/lib/helpers/getEmployees";
+import { signupUser } from "@/lib/helpers/users";
+import { updateUser } from "@/lib/helpers/users";
+import { updateEmployee } from "@/lib/helpers/employees";
+import { insertEmployee } from "@/lib/helpers/employees";
+import { EmployeeUI } from "@/lib/helpers/employees";
 
 interface AddEmployeeModalProps {
   isOpen: boolean;

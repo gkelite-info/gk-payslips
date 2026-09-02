@@ -3,10 +3,10 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import PrintButton from "./PrintButton";
-import { getPayslipById } from "@/lib/helpers/getPayslipById";
-import { getEmployeeById } from "@/lib/helpers/getEmployeeById";
-import { getEmployeeFinancials } from "@/lib/helpers/getEmployeeFinancials";
-import { getEmployeeAddresses } from "@/lib/helpers/getEmployeeAddresses";
+import { getPayslipById } from "@/lib/helpers/employeePayslips";
+import { getEmployeeById } from "@/lib/helpers/employees";
+import { getEmployeeFinancials } from "@/lib/helpers/employeeFinancials";
+import { getEmployeeAddresses } from "@/lib/helpers/employeeAddresses";
 
 export async function generateMetadata(props: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const params = await props.params;

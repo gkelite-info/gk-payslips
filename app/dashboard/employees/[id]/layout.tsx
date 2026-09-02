@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { getEmployeeById } from "@/lib/helpers/getEmployeeById";
+import { getEmployeeById } from "@/lib/helpers/employees";
 import EmployeeTabs from "./EmployeeTabs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

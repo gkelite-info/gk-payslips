@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { getEmployeePayslips } from "@/lib/helpers/getEmployeePayslips";
+import { getEmployeePayslips } from "@/lib/helpers/employeePayslips";
 import EmployeePayslipsClient from "./EmployeePayslipsClient";
 
 export default async function EmployeePayslipsPage({

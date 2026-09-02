@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Home, MapPin, Loader2 } from "lucide-react";
 import { useGetEmployeeAddresses } from "@/lib/hooks/employees/useGetEmployeeAddresses";
-import { EmployeeAddressUI } from "@/lib/helpers/getEmployeeAddresses";
+import { EmployeeAddressUI } from "@/lib/helpers/employeeAddresses";
 import AddAddressModal from "./AddAddressModal";
 
 export default function EmployeeAddressesClient({ 

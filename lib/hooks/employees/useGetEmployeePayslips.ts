@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getEmployeePayslips, EmployeePayslipUI } from "@/lib/helpers/getEmployeePayslips";
+import { getEmployeePayslips, EmployeePayslipUI } from "@/lib/helpers/employeePayslips";
 import { supabase } from "@/lib/supabaseClient";
 
 export function useGetEmployeePayslips(employeeId: string, initialData?: { data: EmployeePayslipUI[], nextCursor: number | undefined }) {

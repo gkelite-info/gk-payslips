@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { getEmployees } from "@/lib/helpers/getEmployees";
+import { getEmployees } from "@/lib/helpers/employees";
 import EmployeesClient from "./EmployeesClient";
 
 export const metadata = {
