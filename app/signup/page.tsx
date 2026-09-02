@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signupUser } from "@/lib/helpers/signupUser";
+import { signupUser } from "@/lib/helpers/users";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";

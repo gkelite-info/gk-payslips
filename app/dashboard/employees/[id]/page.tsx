@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { getEmployeeById } from "@/lib/helpers/getEmployeeById";
+import { getEmployeeById } from "@/lib/helpers/employees";
 import { redirect } from "next/navigation";
 
 export default async function EmployeeOverviewPage({

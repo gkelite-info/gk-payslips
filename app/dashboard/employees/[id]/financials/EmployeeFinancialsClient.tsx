@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Loader2, DollarSign, Building2, Save } from "lucide-react";
 import { useGetEmployeeFinancials } from "@/lib/hooks/employees/useGetEmployeeFinancials";
-import { EmployeeFinancialUI } from "@/lib/helpers/getEmployeeFinancials";
-import { upsertEmployeeFinancials } from "@/lib/helpers/upsertEmployeeFinancials";
+import { EmployeeFinancialUI } from "@/lib/helpers/employeeFinancials";
+import { upsertEmployeeFinancials } from "@/lib/helpers/employeeFinancials";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -45,7 +45,7 @@ export default function EmployeeFinancialsClient({
         bankName: financials.bankName,
         bankAccountNumber: financials.bankAccountNumber,
         bankIfscCode: financials.bankIfscCode,
-        panNumber: financials.panNumber,
+        panNumber: financials.panNumber!,
         aadhaarNumber: financials.aadhaarNumber || "",
         uanNumber: financials.uanNumber || "",
         basicSalary: financials.basicSalary,
@@ -62,7 +62,7 @@ export default function EmployeeFinancialsClient({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     let newValue: string | number = value;
-    
+
     if (type === 'number') {
       newValue = parseFloat(value) || 0;
     } else if (name === 'bankIfscCode' || name === 'panNumber') {
@@ -100,13 +100,13 @@ export default function EmployeeFinancialsClient({
     setIsSubmitting(false);
   };
 
-  const totalNetSalary = 
-    (formData.basicSalary || 0) + 
-    (formData.houseRentAllowance || 0) + 
-    (formData.transportationAllowance || 0) + 
-    (formData.telephoneAllowance || 0) + 
-    (formData.statutoryBonus || 0) + 
-    (formData.specialAllowance || 0) - 
+  const totalNetSalary =
+    (formData.basicSalary || 0) +
+    (formData.houseRentAllowance || 0) +
+    (formData.transportationAllowance || 0) +
+    (formData.telephoneAllowance || 0) +
+    (formData.statutoryBonus || 0) +
+    (formData.specialAllowance || 0) -
     (formData.companyDeduction || 0);
 
   if (isLoading && !financials && !initialData) {
@@ -160,7 +160,7 @@ export default function EmployeeFinancialsClient({
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Aadhaar Number</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Aadhaar Number <span className="text-red-500">*</span></label>
                 <input type="text" name="aadhaarNumber" value={formData.aadhaarNumber || ""} onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700" placeholder="1234 5678 9012" />
               </div>
               <div>

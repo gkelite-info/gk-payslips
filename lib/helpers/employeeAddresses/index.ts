@@ -14,7 +14,7 @@ export interface EmployeeAddressUI {
 }
 
 export async function getEmployeeAddresses(
-  supabase: SupabaseClient, 
+  supabase: SupabaseClient,
   employeeId: string
 ): Promise<EmployeeAddressUI[]> {
   const { data, error } = await supabase
@@ -42,3 +42,32 @@ export async function getEmployeeAddresses(
     createdAt: addr.createdAt,
   }));
 }
+
+
+export const insertEmployeeAddress = async (
+  supabase: SupabaseClient,
+  data: {
+    employeeAddressId: string;
+    employeeId: string;
+    addressLine1: string;
+    addressLine2?: string | null;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    addressType: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+) => {
+  const { error } = await supabase
+    .from('employee_addresses')
+    .insert(data);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return true;
+};
+

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getEmployeeFinancials, EmployeeFinancialUI } from "@/lib/helpers/getEmployeeFinancials";
+import { getEmployeeFinancials, EmployeeFinancialUI } from "@/lib/helpers/employeeFinancials";
 import { supabase } from "@/lib/supabaseClient";
 
 export function useGetEmployeeFinancials(employeeId: string, initialData?: EmployeeFinancialUI | null) {

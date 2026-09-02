@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
-import { insertEmployeeSalaryPayment } from "@/lib/helpers/insertEmployeeSalaryPayment";
+import { insertEmployeeSalaryPayment } from "@/lib/helpers/employeeSalaryPayments";
 import { useGetEmployeePayslips } from "@/lib/hooks/employees/useGetEmployeePayslips";
 
 export default function AddSalaryPaymentModal({ 

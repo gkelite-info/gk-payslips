@@ -7,9 +7,9 @@ import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
-import { upsertEmployeePayslip } from "@/lib/helpers/upsertEmployeePayslip";
+import { upsertEmployeePayslip } from "@/lib/helpers/employeePayslips";
 import { useGetEmployeeFinancials } from "@/lib/hooks/employees/useGetEmployeeFinancials";
-import { EmployeePayslipUI } from "@/lib/helpers/getEmployeePayslips";
+import { EmployeePayslipUI } from "@/lib/helpers/employeePayslips";
 
 export default function GeneratePayslipModal({
   isOpen,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getEmployeeAddresses, EmployeeAddressUI } from "@/lib/helpers/getEmployeeAddresses";
+import { getEmployeeAddresses, EmployeeAddressUI } from "@/lib/helpers/employeeAddresses";
 import { supabase } from "@/lib/supabaseClient";
 
 export function useGetEmployeeAddresses(employeeId: string, initialData?: EmployeeAddressUI[]) {
@@ -13,5 +13,6 @@ export function useGetEmployeeAddresses(employeeId: string, initialData?: Employ
     },
     initialData,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getEmployees, EmployeeUI } from "@/lib/helpers/getEmployees";
+import { getEmployees, EmployeeUI } from "@/lib/helpers/employees";
 import { supabase } from "@/lib/supabaseClient";
 
 export function useGetEmployees(initialData?: { data: EmployeeUI[], nextCursor: number | undefined }, search: string = "") {

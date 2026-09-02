@@ -1,6 +1,28 @@
 "use server";
 
+import { SupabaseClient } from "@supabase/supabase-js";
+
 import { supabase } from "@/lib/supabaseClient";
+
+export async function getUser() {
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !session) {
+    throw new Error("No active session found");
+  }
+
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("userId", session.user.id)
+    .single();
+
+  if (userError) {
+    throw new Error(userError.message);
+  }
+
+  return user;
+}
 
 export const signupUser = async (payload: {
   userId: string;
@@ -62,3 +84,35 @@ export const signupUser = async (payload: {
     return { success: false, error: message };
   }
 };
+
+
+export const updateUser = async (
+  supabase: SupabaseClient,
+  userId: string,
+  data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile: string;
+    alternateMobile?: string | null;
+    role: string;
+    updatedAt: string;
+  }
+) => {
+  const updatePayload = {
+    ...data,
+    alternateMobile: data.alternateMobile || null
+  };
+
+  const { error } = await supabase
+    .from('users')
+    .update(updatePayload)
+    .eq('userId', userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return true;
+};
+

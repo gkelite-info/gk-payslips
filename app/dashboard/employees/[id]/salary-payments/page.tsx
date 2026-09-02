@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { getEmployeeSalaryPayments } from "@/lib/helpers/getEmployeeSalaryPayments";
+import { getEmployeeSalaryPayments } from "@/lib/helpers/employeeSalaryPayments";
 import EmployeeSalaryPaymentsClient from "./EmployeeSalaryPaymentsClient";
 
 export default async function EmployeeSalaryPaymentsPage({
