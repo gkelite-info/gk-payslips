@@ -20,12 +20,12 @@ export default function LoginPage() {
     const cookies = document.cookie.split(';');
     const emailCookie = cookies.find(c => c.trim().startsWith('remembered_email='));
     const passwordCookie = cookies.find(c => c.trim().startsWith('remembered_password='));
-    
+
     if (emailCookie) {
       setEmail(decodeURIComponent(emailCookie.split('=')[1]));
       setRememberMe(true);
     }
-    
+
     if (passwordCookie) {
       try {
         setPassword(atob(decodeURIComponent(passwordCookie.split('=')[1])));
@@ -173,7 +173,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 w-full rounded-xl bg-white px-4 py-3.5 text-indigo-600 font-bold tracking-wide shadow-lg transition-all hover:bg-indigo-50 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="mt-6 w-full rounded-xl bg-white px-4 py-3.5 text-indigo-600 font-bold tracking-wide shadow-lg transition-all hover:bg-indigo-50 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
@@ -183,7 +183,7 @@ export default function LoginPage() {
             Don't have an account?{" "}
             <Link
               href="/signup"
-              className="font-bold text-white hover:text-indigo-200 transition-colors"
+              className="font-bold text-white hover:text-indigo-200 transition-colors cursor-pointer"
             >
               Sign Up
             </Link>

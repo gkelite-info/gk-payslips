@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, FileText, Loader2, Download, ExternalLink, Calendar, CheckCircle2, Clock } from "lucide-react";
+import { Plus, FileText, Loader2, Download, ExternalLink, Calendar, CheckCircle2, Clock, Mail } from "lucide-react";
 import { useGetEmployeePayslips } from "@/lib/hooks/employees/useGetEmployeePayslips";
 import { EmployeePayslipUI } from "@/lib/helpers/employeePayslips";
 import GeneratePayslipModal from "./GeneratePayslipModal";
@@ -26,6 +26,34 @@ export default function EmployeePayslipsClient({
   const [slipToDelete, setSlipToDelete] = useState<string | null>(null);
   const [editData, setEditData] = useState<EmployeePayslipUI | null>(null);
   const queryClient = useQueryClient();
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+
+  const handleSendEmail = async (slipId: string) => {
+    setSendingEmailId(slipId);
+    try {
+      const response = await fetch("/api/send-payslip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          employeeId,
+          employeePayslipId: slipId,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to send email");
+      }
+
+      toast.success("Payslip sent successfully via email!");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setSendingEmailId(null);
+    }
+  };
 
   const { 
     data, 
@@ -135,7 +163,11 @@ export default function EmployeePayslipsClient({
                     </p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap align-middle text-left">
-                    {slip.status === 'final' ? (
+                    {slip.status === 'paid' ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">
+                        <CheckCircle2 size={12} /> Paid
+                      </span>
+                    ) : slip.status === 'final' || slip.status === 'approved' ? (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">
                         <CheckCircle2 size={12} /> Final
                       </span>
@@ -161,6 +193,14 @@ export default function EmployeePayslipsClient({
                       >
                         <ExternalLink size={18} />
                       </Link>
+                      <button 
+                        onClick={() => handleSendEmail(slip.id)}
+                        disabled={sendingEmailId === slip.id}
+                        className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
+                        title="Send via Email"
+                      >
+                        {sendingEmailId === slip.id ? <Loader2 size={18} className="animate-spin" /> : <Mail size={18} />}
+                      </button>
                       <button 
                         onClick={() => handleEdit(slip)}
                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" 

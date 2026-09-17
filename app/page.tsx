@@ -189,13 +189,13 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={handleLogin}
-              className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors px-4 py-2"
+              className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors px-4 py-2 cursor-pointer"
             >
               Log In
             </button>
             <button
               onClick={scrollToContact}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-md hover:shadow-xl hover:shadow-slate-900/10 flex items-center gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all shadow-md hover:shadow-xl hover:shadow-slate-900/10 flex items-center gap-2 cursor-pointer"
             >
               Request Demo <ArrowRight className="w-4 h-4" />
             </button>
