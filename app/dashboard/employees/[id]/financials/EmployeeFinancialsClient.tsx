@@ -180,36 +180,36 @@ export default function EmployeeFinancialsClient({
             <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Basic Salary</label>
-                <input type="number" step="0.01" name="basicSalary" value={formData.basicSalary || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="basicSalary" value={formData.basicSalary || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">HRA</label>
-                <input type="number" step="0.01" name="houseRentAllowance" value={formData.houseRentAllowance || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="houseRentAllowance" value={formData.houseRentAllowance || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Transportation</label>
-                <input type="number" step="0.01" name="transportationAllowance" value={formData.transportationAllowance || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="transportationAllowance" value={formData.transportationAllowance || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Telephone</label>
-                <input type="number" step="0.01" name="telephoneAllowance" value={formData.telephoneAllowance || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="telephoneAllowance" value={formData.telephoneAllowance || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Statutory Bonus</label>
-                <input type="number" step="0.01" name="statutoryBonus" value={formData.statutoryBonus || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="statutoryBonus" value={formData.statutoryBonus || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Special Allowance</label>
-                <input type="number" step="0.01" name="specialAllowance" value={formData.specialAllowance || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                <input type="number" step="0.01" name="specialAllowance" value={formData.specialAllowance || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
               </div>
             </div>
             <div className="pt-2">
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Company Deduction</label>
-              <input type="number" step="0.01" name="companyDeduction" value={formData.companyDeduction || ""} placeholder="0" onChange={handleChange} className="w-full px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+              <input type="number" step="0.01" name="companyDeduction" value={formData.companyDeduction || ""} placeholder="0" onChange={handleChange} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 outline-none transition-all text-sm font-medium text-slate-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
             </div>
 
             <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between">

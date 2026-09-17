@@ -20,6 +20,7 @@ import { useGetUser } from "@/lib/hooks/auth/useGetUser";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { SignOutConfirmationModal } from "@/components/SignOutConfirmationModal";
 
 export default function DashboardLayout({
   children,
@@ -30,6 +31,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const { data: user, isLoading } = useGetUser();
 
   const handleSignOut = async () => {
@@ -166,7 +168,10 @@ export default function DashboardLayout({
                     </div>
                     <div className="p-2">
                       <button
-                        onClick={handleSignOut}
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          setIsSignOutModalOpen(true);
+                        }}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-red-600 hover:bg-red-50 transition-colors text-sm font-semibold text-left cursor-pointer"
                       >
                         <LogOut size={16} />
@@ -187,6 +192,12 @@ export default function DashboardLayout({
           </div>
         </div>
       </main>
+
+      <SignOutConfirmationModal
+        isOpen={isSignOutModalOpen}
+        onClose={() => setIsSignOutModalOpen(false)}
+        onConfirm={handleSignOut}
+      />
     </div>
   );
 }
